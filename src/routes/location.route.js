@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const Location = require('./../models/location.model');
+const guard = require('./../middlewares/guard.mw');
 
-router.get('', async (req, res) => {
+router.get('', guard, async (req, res) => {
     try {
         const locations = await Location.find();
         if (!locations) {
@@ -13,7 +14,7 @@ router.get('', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', guard, async (req, res) => {
     const LocationId = req.params.id;
     try {
         const location = await Location.findOne({ LocationId });
@@ -26,7 +27,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('', async (req, res) => {
+router.post('', guard, async (req, res) => {
     const newLocation = new Location(req.body);
     try {
         await newLocation.save();
@@ -36,7 +37,7 @@ router.post('', async (req, res) => {
     }
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', guard, async (req, res) => {
     const allowedAttributes = Location.getUpdatableAttributes();
     const update = req.body;
     const updateAttributes = Object.keys(update);
@@ -62,7 +63,7 @@ router.patch('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', guard, async (req, res) => {
     const LocationId = req.params.id;
     try {
         const location = await Location.findOneAndDelete({ LocationId });
