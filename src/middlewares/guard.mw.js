@@ -17,14 +17,14 @@ const guard = async (req, res, next) => {
             return res.status(401).send({ error: 'Cannot authenticate incoming request' });
         }
 
-        if (req.method !== 'GET') {
+        if (req.method !== 'GET' && !req.baseUrl.endsWith('users')) {
             if (user.role !== 'HR_MANAGER') {
                 return res.status(401).send({ error: 'User is not authorized to modify data' });
             }
         }
 
         req.token = token;
-        req.email = user.email;
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).send({ error: 'Cannot authenticate incoming request' });
