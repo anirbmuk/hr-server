@@ -12,6 +12,7 @@ const allowedOrigins = ['http://localhost:8000', 'https://menj-server.herokuapp.
 
 app.use((req, res, next) => {
 	const origin = req.headers.origin;
+	console.log(origin);
 	if (allowedOrigins.indexOf(origin) > -1) {
 		res.setHeader('Access-Control-Allow-Origin', origin);
 	}
