@@ -8,11 +8,10 @@ const locationRoutes = require('./routes/location.route');
 const PORT = process.env.PORT || '3000';
 const base_path = process.env.hr_server_base_path;
 
-const allowedOrigins = ['http://localhost:8000', 'https://menj-server.herokuapp.com'];
+const allowedOrigins = ['http://localhost:8000', 'https://menj-stack.herokuapp.com'];
 
 app.use((req, res, next) => {
 	const origin = req.headers.origin;
-	console.log(origin);
 	if (allowedOrigins.indexOf(origin) > -1) {
 		res.setHeader('Access-Control-Allow-Origin', origin);
 	}
