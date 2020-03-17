@@ -15,4 +15,4 @@ mongoose.connect(connectionURL, {
     useFindAndModify: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
-});
+}).catch(() => console.error('Failed to connect to mongodb'));
