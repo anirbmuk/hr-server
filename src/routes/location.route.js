@@ -21,7 +21,7 @@ router.get('/:id', guard, async (req, res) => {
         if (!location) {
             return res.status(404).send({ items: [] });
         }
-        res.status(200).send({ items: [ location ] });
+        res.status(200).send(location);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
@@ -31,7 +31,7 @@ router.post('', guard, async (req, res) => {
     const newLocation = new Location(req.body);
     try {
         await newLocation.save();
-        res.status(201).send({ items: [ newLocation ]});
+        res.status(201).send(newLocation);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
@@ -57,7 +57,7 @@ router.patch('/:id', guard, async (req, res) => {
         updateAttributes.forEach(attribute => location[attribute] = update[attribute]);
         await location.save();
 
-        res.status(200).send({ items: [ location ]});
+        res.status(200).send(location);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
@@ -71,7 +71,7 @@ router.delete('/:id', guard, async (req, res) => {
             return res.status(404).send({ items: [] });
         }
 
-        res.status(200).send({ items: [ location ]});
+        res.status(200).send(location);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
