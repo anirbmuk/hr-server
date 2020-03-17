@@ -4,11 +4,12 @@ const guard = require('./../middlewares/guard.mw');
 
 router.get('', guard, async (req, res) => {
     try {
-        const locations = await Location.find();
+        const locations = await Location.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
+		const count = await Location.estimatedDocumentCount();
         if (!locations) {
             return res.status(404).send({ items: [] });
         }
-        res.status(200).send({ items: locations });
+        res.status(200).send({ items: locations, estimatedCount: count });
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
