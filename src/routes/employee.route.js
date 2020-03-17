@@ -1,45 +1,45 @@
 const router = require('express').Router();
-const Location = require('./../models/location.model');
+const Employee = require('./../models/employee.model');
 const guard = require('./../middlewares/guard.mw');
 
 router.get('', guard, async (req, res) => {
     try {
-        const locations = await Location.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
-        if (!locations) {
+        const employees = await Employee.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
+        if (!employees) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
-        const count = await Location.estimatedDocumentCount();
-        res.status(200).send({ items: locations, estimatedCount: count });
+        const count = await Employee.estimatedDocumentCount();
+        res.status(200).send({ items: employees, estimatedCount: count });
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 });
 
 router.get('/:id', guard, async (req, res) => {
-    const LocationId = parseInt(req.params.id);
+    const EmployeeId = parseInt(req.params.id);
     try {
-        const location = await Location.findOne({ LocationId });
-        if (!location) {
+        const employee = await Employee.findOne({ EmployeeId });
+        if (!employee) {
             return res.status(404).send({ items: [] });
         }
-        res.status(200).send(location);
+        res.status(200).send(employee);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 });
 
 router.post('', guard, async (req, res) => {
-    const newLocation = new Location(req.body);
+    const newEmployee = new Employee(req.body);
     try {
-        await newLocation.save();
-        res.status(201).send(newLocation);
+        await newEmployee.save();
+        res.status(201).send(newEmployee);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 });
 
 router.patch('/:id', guard, async (req, res) => {
-    const allowedAttributes = Location.getUpdatableAttributes();
+    const allowedAttributes = Employee.getUpdatableAttributes();
     const update = req.body;
     const updateAttributes = Object.keys(update);
 
@@ -48,31 +48,31 @@ router.patch('/:id', guard, async (req, res) => {
         return res.status(400).send({ error: 'Attempting to update restricted or non-existent attributes'});
     }
 
-    const LocationId = parseInt(req.params.id);
+    const EmployeeId = parseInt(req.params.id);
     try {
-        const location = await Location.findOne({ LocationId });
-        if (!location) {
+        const employee = await Employee.findOne({ EmployeeId });
+        if (!employee) {
             return res.status(404).send({ items: [] });
         }
 
-        updateAttributes.forEach(attribute => location[attribute] = update[attribute]);
-        await location.save();
+        updateAttributes.forEach(attribute => employee[attribute] = update[attribute]);
+        await employee.save();
 
-        res.status(200).send(location);
+        res.status(200).send(employee);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
 });
 
 router.delete('/:id', guard, async (req, res) => {
-    const LocationId = parseInt(req.params.id);
+    const EmployeeId = parseInt(req.params.id);
     try {
-        const location = await Location.findOneAndDelete({ LocationId });
-        if (!location) {
+        const employee = await Employee.findOneAndDelete({ EmployeeId });
+        if (!employee) {
             return res.status(404).send({ items: [] });
         }
 
-        res.status(200).send(location);
+        res.status(200).send(employee);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }

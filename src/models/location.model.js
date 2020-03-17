@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const locationSchema = mongoose.Schema({
     LocationId: {
-        type: String,
+        type: Number,
         required: true,
         trim: true,
         unique: true
@@ -29,6 +29,8 @@ const locationSchema = mongoose.Schema({
         type: String,
         trim: true
     }
+}, {
+    timestamps: true
 });
 
 locationSchema.methods.toJSON = function() {

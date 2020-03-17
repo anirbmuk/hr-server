@@ -4,6 +4,8 @@ require('./database/mongodb');
 
 const userRoutes = require('./routes/user.route');
 const locationRoutes = require('./routes/location.route');
+const departmentRoutes = require('./routes/department.route');
+const employeeRoutes = require('./routes/employee.route');
 
 const PORT = process.env.PORT || '3000';
 const base_path = process.env.hr_server_base_path;
@@ -22,7 +24,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.use(base_path + 'locations', locationRoutes);
 app.use(base_path + 'users', userRoutes);
+app.use(base_path + 'locations', locationRoutes);
+app.use(base_path + 'departments', departmentRoutes);
+app.use(base_path + 'employees', employeeRoutes);
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
