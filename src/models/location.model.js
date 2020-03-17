@@ -42,7 +42,7 @@ locationSchema.methods.toJSON = function() {
 };
 
 locationSchema.statics.getUpdatableAttributes = function() {
-    return ['StreetAddress', 'PostalCode', 'City', 'StateProvince', 'CountryId'];
+    return ['LocationId', 'StreetAddress', 'PostalCode', 'City', 'StateProvince', 'CountryId'];
 };
 
 const Location = mongoose.model('location', locationSchema);
