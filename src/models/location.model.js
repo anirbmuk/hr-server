@@ -14,7 +14,7 @@ const locationSchema = mongoose.Schema({
     PostalCode: {
         type: String,
         trim: true,
-        maxlength: 12
+        maxlength: [12, 'Postal Code can be of max 12 characters']
     },
     City: {
         type: String,
