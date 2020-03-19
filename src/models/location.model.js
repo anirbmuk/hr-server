@@ -27,7 +27,8 @@ const locationSchema = mongoose.Schema({
     },
     CountryId: {
         type: String,
-        trim: true
+        trim: true,
+        maxlength: [2, 'Country Id can be of max 2 characters']
     }
 }, {
     timestamps: true
