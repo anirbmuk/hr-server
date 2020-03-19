@@ -18,10 +18,17 @@ const departmentSchema = mongoose.Schema({
     },
     LocationId: {
         type: Number,
-        trim: true
+        trim: true,
+        ref: 'location'
     }
 }, {
     timestamps: true
+});
+
+departmentSchema.virtual('employees', {
+    ref: 'employee',
+    localField: 'DepartmentId',
+    foreignField: 'DepartmentId'
 });
 
 departmentSchema.methods.toJSON = function() {

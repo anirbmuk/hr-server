@@ -34,6 +34,12 @@ const locationSchema = mongoose.Schema({
     timestamps: true
 });
 
+locationSchema.virtual('departments', {
+    ref: 'department',
+    localField: 'LocationId',
+    foreignField: 'LocationId'
+});
+
 locationSchema.methods.toJSON = function() {
     const location = this;
     const locationObject = location.toObject();

@@ -17,12 +17,24 @@ router.get('', guard, async (req, res) => {
 
 router.get('/:id', guard, async (req, res) => {
     const EmployeeId = parseInt(req.params.id);
+    const children = req.query.children;
+    let expandChildren = [];
+    if (!!children) {
+        expandChildren = children.trim().split(',');
+    }
     try {
         const employee = await Employee.findOne({ EmployeeId });
         if (!employee) {
-            return res.status(404).send({ items: [] });
+            return res.status(404).send({ });
         }
-        res.status(200).send(employee);
+        const responseObject = employee.toJSON();
+        if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
+            for (const item of expandChildren) {
+                await employee.populate(item).execPopulate();
+                responseObject[item] = employee[item];
+            }
+        }
+        res.status(200).send(responseObject);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }

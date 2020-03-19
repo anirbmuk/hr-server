@@ -17,12 +17,24 @@ router.get('', guard, async(req, res) => {
 
 router.get('/:id', guard, async (req, res) => {
     const DepartmentId = parseInt(req.params.id);
+    const children = req.query.children;
+    let expandChildren = [];
+    if (!!children) {
+        expandChildren = children.trim().split(',');
+    }
     try {
         const department = await Department.findOne({ DepartmentId });
         if (!department) {
-            return res.status(404).send({ items: [] });
+            return res.status(404).send({ });
         }
-        res.status(200).send(department);
+        const responseObject = department.toJSON();
+        if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
+            for (const item of expandChildren) {
+                await department.populate(item).execPopulate();
+                responseObject[item] = department[item];
+            }
+        }
+        res.status(200).send(responseObject);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }

@@ -17,12 +17,24 @@ router.get('', guard, async (req, res) => {
 
 router.get('/:id', guard, async (req, res) => {
     const LocationId = parseInt(req.params.id);
+    const children = req.query.children;
+    let expandChildren = [];
+    if (!!children) {
+        expandChildren = children.trim().split(',');
+    }
     try {
         const location = await Location.findOne({ LocationId });
         if (!location) {
-            return res.status(404).send({ items: [] });
+            return res.status(404).send({});
         }
-        res.status(200).send(location);
+        const responseObject = location.toJSON();
+        if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
+            for (const item of expandChildren) {
+                await location.populate(item).execPopulate();
+                responseObject[item] = location[item];
+            }
+        }
+        res.status(200).send(responseObject);
     } catch (error) {
         res.status(500).send({ error: error.message });
     }

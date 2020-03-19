@@ -61,6 +61,12 @@ const employeeSchema = mongoose.Schema({
     timestamps: true
 });
 
+employeeSchema.virtual('directs', {
+    ref: 'employee',
+    localField: 'EmployeeId',
+    foreignField: 'ManagerId'
+})
+
 employeeSchema.methods.toJSON = function() {
     const department = this;
     const departmentObject = department.toObject();
