@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+/* const Employee = require('./employee.model'); */
 
 const departmentSchema = mongoose.Schema({
     DepartmentId: {
@@ -44,6 +45,12 @@ departmentSchema.methods.toJSON = function() {
 departmentSchema.statics.getUpdatableAttributes = function() {
     return ['DepartmentId', 'DepartmentName', 'ManagerId', 'LocationId'];
 };
+
+/* departmentSchema.pre('remove', async function(next) {
+    const department = this;
+    await Employee.deleteMany({ DepartmentId: department.DepartmentId });
+    next();
+}); */
 
 const Department = mongoose.model('department', departmentSchema);
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+/* const Department = require('./department.model'); */
 
 const locationSchema = mongoose.Schema({
     LocationId: {
@@ -53,6 +54,12 @@ locationSchema.methods.toJSON = function() {
 locationSchema.statics.getUpdatableAttributes = function() {
     return ['LocationId', 'StreetAddress', 'PostalCode', 'City', 'StateProvince', 'CountryId'];
 };
+
+/* locationSchema.pre('remove', async function(next) {
+    const location = this;
+    await Department.deleteMany({ LocationId: location.LocationId });
+    next();
+}); */
 
 const Location = mongoose.model('location', locationSchema);
 

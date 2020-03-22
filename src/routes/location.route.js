@@ -1,10 +1,23 @@
 const router = require('express').Router();
 const Location = require('./../models/location.model');
+// const Department = require('./../models/department.model');
 const guard = require('./../middlewares/guard.mw');
 
 router.get('', guard, async (req, res) => {
+    const sortBy = req.query.sortBy;
+    let sortOptions = { };
+    if (!!sortBy) {
+        const options = sortBy.split(',');
+        for (const option of options) {
+            const keys = option.split(':');
+            sortOptions[keys[0]] = keys[1];
+        }
+    }
     try {
-        const locations = await Location.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
+        const locations = await Location.find()
+                                        .limit(parseInt(req.query.limit))
+                                        .skip(parseInt(req.query.skip))
+                                        .sort(sortOptions);
         if (!locations) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
@@ -79,11 +92,13 @@ router.patch('/:id', guard, async (req, res) => {
 router.delete('/:id', guard, async (req, res) => {
     const LocationId = parseInt(req.params.id);
     try {
-        const location = await Location.findOneAndDelete({ LocationId });
+        // const location = await Location.findOneAndDelete({ LocationId });
+        const location = await Location.findOne({ LocationId });
         if (!location) {
             return res.status(404).send({ items: [] });
         }
-
+		// await Department.deleteMany({ LocationId: location.LocationId });
+        await location.remove();
         res.status(200).send(location);
     } catch (error) {
         res.status(500).send({ error: error.message });

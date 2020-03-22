@@ -3,8 +3,20 @@ const Employee = require('./../models/employee.model');
 const guard = require('./../middlewares/guard.mw');
 
 router.get('', guard, async (req, res) => {
+	const sortBy = req.query.sortBy;
+    let sortOptions = { };
+    if (!!sortBy) {
+        const options = sortBy.split(',');
+        for (const option of options) {
+            const keys = option.split(':');
+            sortOptions[keys[0]] = keys[1];
+        }
+    }
     try {
-        const employees = await Employee.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
+        const employees = await Employee.find()
+                                        .limit(parseInt(req.query.limit))
+                                        .skip(parseInt(req.query.skip))
+                                        .sort({ EmployeeId: 1 });
         if (!employees) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
@@ -79,11 +91,12 @@ router.patch('/:id', guard, async (req, res) => {
 router.delete('/:id', guard, async (req, res) => {
     const EmployeeId = parseInt(req.params.id);
     try {
-        const employee = await Employee.findOneAndDelete({ EmployeeId });
+        // const employee = await Employee.findOneAndDelete({ EmployeeId });
+        const employee = await Employee.findOne({ EmployeeId });
         if (!employee) {
             return res.status(404).send({ items: [] });
         }
-
+        await employee.remove();
         res.status(200).send(employee);
     } catch (error) {
         res.status(500).send({ error: error.message });

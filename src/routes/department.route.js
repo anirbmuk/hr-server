@@ -1,10 +1,23 @@
 const router = require('express').Router();
 const Department = require('./../models/department.model');
+// const Employee = require('./../models/employee.model');
 const guard = require('./../middlewares/guard.mw');
 
 router.get('', guard, async(req, res) => {
+	const sortBy = req.query.sortBy;
+    let sortOptions = { };
+    if (!!sortBy) {
+        const options = sortBy.split(',');
+        for (const option of options) {
+            const keys = option.split(':');
+            sortOptions[keys[0]] = keys[1];
+        }
+    }
     try {
-        const departments = await Department.find().limit(parseInt(req.query.limit)).skip(parseInt(req.query.skip));
+        const departments = await Department.find()
+                                            .limit(parseInt(req.query.limit))
+                                            .skip(parseInt(req.query.skip))
+                                            .sort({ DepartmentId: 1 });
         if (!departments) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
@@ -79,11 +92,13 @@ router.patch('/:id', guard, async (req, res) => {
 router.delete('/:id', guard, async (req, res) => {
     const DepartmentId = parseInt(req.params.id);
     try {
-        const department = await Department.findOneAndDelete({ DepartmentId });
+        // const department = await Department.findOneAndDelete({ DepartmentId });
+        const department = await Department.findOne({ DepartmentId });
         if (!department) {
-            return res.status(404).send({ items: [] });
+            return res.status(404).send();
         }
-
+		// await Employee.deleteMany({ DepartmentId: department.DepartmentId });
+        await department.remove();
         res.status(200).send(department);
     } catch (error) {
         res.status(500).send({ error: error.message });
