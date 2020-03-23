@@ -2,6 +2,10 @@ const router = require('express').Router();
 const Employee = require('./../models/employee.model');
 const guard = require('./../middlewares/guard.mw');
 
+const sortAttributes = {
+	directs: { EmployeeId: 1 }
+};
+
 router.get('', guard, async (req, res) => {
 	const sortBy = req.query.sortBy;
     let sortOptions = { };
@@ -42,7 +46,10 @@ router.get('/:id', guard, async (req, res) => {
         const responseObject = employee.toJSON();
         if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
             for (const item of expandChildren) {
-                await employee.populate(item).execPopulate();
+                await employee.populate(item).execPopulate({
+					path: item,
+					options: { sort: sortAttributes[item] }
+				});
                 responseObject[item] = employee[item];
             }
         }

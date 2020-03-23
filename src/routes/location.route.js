@@ -3,6 +3,10 @@ const Location = require('./../models/location.model');
 // const Department = require('./../models/department.model');
 const guard = require('./../middlewares/guard.mw');
 
+const sortAttributes = {
+	departments: { DepartmentId: 1 }
+};
+
 router.get('', guard, async (req, res) => {
     const sortBy = req.query.sortBy;
     let sortOptions = { };
@@ -43,7 +47,10 @@ router.get('/:id', guard, async (req, res) => {
         const responseObject = location.toJSON();
         if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
             for (const item of expandChildren) {
-                await location.populate(item).execPopulate();
+                await location.populate({
+					path: item,
+					options: { sort: sortAttributes[item] }
+				}).execPopulate();
                 responseObject[item] = location[item];
             }
         }

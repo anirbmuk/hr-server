@@ -3,6 +3,10 @@ const Department = require('./../models/department.model');
 // const Employee = require('./../models/employee.model');
 const guard = require('./../middlewares/guard.mw');
 
+const sortAttributes = {
+	employees: { EmployeeId: 1 }
+};
+
 router.get('', guard, async(req, res) => {
 	const sortBy = req.query.sortBy;
     let sortOptions = { };
@@ -43,7 +47,10 @@ router.get('/:id', guard, async (req, res) => {
         const responseObject = department.toJSON();
         if (!!expandChildren && Array.isArray(expandChildren) && expandChildren.length > 0) {
             for (const item of expandChildren) {
-                await department.populate(item).execPopulate();
+                await department.populate(item).execPopulate({
+					path: item,
+					options: { sort: sortAttributes[item] }
+				});
                 responseObject[item] = department[item];
             }
         }
