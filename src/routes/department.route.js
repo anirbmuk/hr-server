@@ -8,8 +8,12 @@ const sortAttributes = {
 };
 
 router.get('', guard, async(req, res) => {
-	const sortBy = req.query.sortBy;
+    const sortBy = req.query.sortBy;
+    const filter = req.query.filter;
     let sortOptions = { };
+    const orConditions = [];
+    let departmentQuery;
+    let departmentCountQuery;
     if (!!sortBy) {
         const options = sortBy.split(',');
         for (const option of options) {
@@ -17,15 +21,42 @@ router.get('', guard, async(req, res) => {
             sortOptions[keys[0]] = keys[1];
         }
     }
+    if (!!filter) {
+        const attributes = Department.getSearchableAttributes();
+        for (const attribute of attributes) {
+            let addToFilter = false;
+            const filterOptions = { };
+            if (attribute.type === 'Number' && !isNaN(filter)) {
+                filterOptions[attribute.attr] = +filter;
+                addToFilter = true;
+            } else if (attribute.type === 'String') {
+                filterOptions[attribute.attr] = { $regex: filter, $options: 'i' };
+                addToFilter = true;
+            }
+
+            if (addToFilter) {
+                orConditions.push(filterOptions);
+            }
+        }
+        departmentQuery = Department.where().or(orConditions);
+        departmentCountQuery = Department.where().or(orConditions);
+    } else {
+        departmentQuery = Department.find();
+    }
     try {
-        const departments = await Department.find()
-                                            .limit(parseInt(req.query.limit))
-                                            .skip(parseInt(req.query.skip))
-                                            .sort({ DepartmentId: 1 });
+        const query = departmentQuery.limit(parseInt(req.query.limit))
+                                     .skip(parseInt(req.query.skip))
+                                     .sort(sortOptions);
+        const departments = await query;
         if (!departments) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
-        const count = await Department.estimatedDocumentCount();
+        let count = 0;
+        if (!!departmentCountQuery) {
+            count = await departmentCountQuery.countDocuments();
+        } else {
+            count = await Department.estimatedDocumentCount();
+        }
         res.status(200).send({ items: departments, estimatedCount: count });
     } catch (error) {
         res.status(500).send({ error: error.message });

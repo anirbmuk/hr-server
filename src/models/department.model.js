@@ -46,6 +46,15 @@ departmentSchema.statics.getUpdatableAttributes = function() {
     return ['DepartmentId', 'DepartmentName', 'ManagerId', 'LocationId'];
 };
 
+departmentSchema.statics.getSearchableAttributes = function() {
+    return [
+        { attr: 'DepartmentId', type: 'Number' },
+        { attr: 'DepartmentName', type: 'String' },
+        { attr: 'ManagerId', type: 'Number' },
+        { attr: 'LocationId', type: 'Number' }
+    ];
+};
+
 /* departmentSchema.pre('remove', async function(next) {
     const department = this;
     await Employee.deleteMany({ DepartmentId: department.DepartmentId });

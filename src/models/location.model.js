@@ -55,6 +55,18 @@ locationSchema.statics.getUpdatableAttributes = function() {
     return ['LocationId', 'StreetAddress', 'PostalCode', 'City', 'StateProvince', 'CountryId'];
 };
 
+locationSchema.statics.getSearchableAttributes = function() {
+    return [
+      { attr: 'LocationId', type: 'Number' },  
+      { attr: 'StreetAddress', type: 'String' },  
+      { attr: 'PostalCode', type: 'String' },  
+      { attr: 'City', type: 'String' },  
+      { attr: 'StateProvince', type: 'String' },  
+      { attr: 'CountryId', type: 'String' },  
+    ];
+    // return ['StreetAddress', 'PostalCode', 'City', 'StateProvince', 'CountryId'];
+};
+
 /* locationSchema.pre('remove', async function(next) {
     const location = this;
     await Department.deleteMany({ LocationId: location.LocationId });

@@ -81,6 +81,20 @@ employeeSchema.statics.getUpdatableAttributes = function() {
     return ['EmployeeId', 'FirstName', 'LastName', 'Email', 'PhoneNumber', 'HireDate', 'JobId', 'Salary', 'CommissionPct', 'ManagerId', 'DepartmentId'];
 };
 
+employeeSchema.statics.getSearchableAttributes = function() {
+    return [
+        { attr: 'EmployeeId', type: 'Number' },
+        { attr: 'FirstName', type: 'String' },
+        { attr: 'LastName', type: 'String' },
+        { attr: 'Email', type: 'String' },
+        { attr: 'PhoneNumber', type: 'String' },
+        { attr: 'JobId', type: 'String' },
+        { attr: 'Salary', type: 'Number' },
+        { attr: 'ManagerId', type: 'Number' },
+        { attr: 'DepartmentId', type: 'Number' }
+    ];
+};
+
 const Employee = mongoose.model('employee', employeeSchema);
 
 module.exports = Employee;

@@ -8,7 +8,11 @@ const sortAttributes = {
 
 router.get('', guard, async (req, res) => {
 	const sortBy = req.query.sortBy;
+    const filter = req.query.filter;
     let sortOptions = { };
+    const orConditions = [];
+    let employeeQuery;
+    let employeeCountQuery;
     if (!!sortBy) {
         const options = sortBy.split(',');
         for (const option of options) {
@@ -16,15 +20,42 @@ router.get('', guard, async (req, res) => {
             sortOptions[keys[0]] = keys[1];
         }
     }
+    if (!!filter) {
+        const attributes = Employee.getSearchableAttributes();
+        for (const attribute of attributes) {
+            let addToFilter = false;
+            const filterOptions = { };
+            if (attribute.type === 'Number' && !isNaN(filter)) {
+                filterOptions[attribute.attr] = +filter;
+                addToFilter = true;
+            } else if (attribute.type === 'String') {
+                filterOptions[attribute.attr] = { $regex: filter, $options: 'i' };
+                addToFilter = true;
+            }
+
+            if (addToFilter) {
+                orConditions.push(filterOptions);
+            }
+        }
+        employeeQuery = Employee.where().or(orConditions);
+        employeeCountQuery = Employee.where().or(orConditions);
+    } else {
+        employeeQuery = Employee.find();
+    }
     try {
-        const employees = await Employee.find()
-                                        .limit(parseInt(req.query.limit))
-                                        .skip(parseInt(req.query.skip))
-                                        .sort({ EmployeeId: 1 });
+        const query = employeeQuery.limit(parseInt(req.query.limit))
+                                   .skip(parseInt(req.query.skip))
+                                   .sort(sortOptions);
+        const employees = await query;
         if (!employees) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
-        const count = await Employee.estimatedDocumentCount();
+        let count = 0;
+        if (!!employeeCountQuery) {
+            count = await employeeCountQuery.countDocuments();
+        } else {
+            count = await Employee.estimatedDocumentCount();
+        }
         res.status(200).send({ items: employees, estimatedCount: count });
     } catch (error) {
         res.status(500).send({ error: error.message });

@@ -9,7 +9,11 @@ const sortAttributes = {
 
 router.get('', guard, async (req, res) => {
     const sortBy = req.query.sortBy;
+    const filter = req.query.filter;
     let sortOptions = { };
+    const orConditions = [];
+    let locationQuery;
+    let locationCountQuery;
     if (!!sortBy) {
         const options = sortBy.split(',');
         for (const option of options) {
@@ -17,15 +21,42 @@ router.get('', guard, async (req, res) => {
             sortOptions[keys[0]] = keys[1];
         }
     }
+    if (!!filter) {
+        const attributes = Location.getSearchableAttributes();
+        for (const attribute of attributes) {
+            let addToFilter = false;
+            const filterOptions = { };
+            if (attribute.type === 'Number' && !isNaN(filter)) {
+                filterOptions[attribute.attr] = +filter;
+                addToFilter = true;
+            } else if (attribute.type === 'String') {
+                filterOptions[attribute.attr] = { $regex: filter, $options: 'i' };
+                addToFilter = true;
+            }
+
+            if (addToFilter) {
+                orConditions.push(filterOptions);
+            }
+        }
+        locationQuery = Location.where().or(orConditions);
+        locationCountQuery = Location.where().or(orConditions);
+    } else {
+        locationQuery = Location.find();
+    }
     try {
-        const locations = await Location.find()
-                                        .limit(parseInt(req.query.limit))
-                                        .skip(parseInt(req.query.skip))
-                                        .sort(sortOptions);
+        const query = locationQuery.limit(parseInt(req.query.limit))
+                                   .skip(parseInt(req.query.skip))
+                                   .sort(sortOptions);
+        const locations = await query;
         if (!locations) {
             return res.status(404).send({ items: [], estimatedCount: 0 });
         }
-        const count = await Location.estimatedDocumentCount();
+        let count = 0;
+        if (!!locationCountQuery) {
+            count = await locationCountQuery.countDocuments();
+        } else {
+            count = await Location.estimatedDocumentCount();
+        }
         res.status(200).send({ items: locations, estimatedCount: count });
     } catch (error) {
         res.status(500).send({ error: error.message });
