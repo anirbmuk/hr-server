@@ -12,7 +12,6 @@ router.get('', guard, async(req, res) => {
             sortOptions[keys[0]] = keys[1];
         }
     }
-	console.log(sortOptions);
     try {
         const jobs = await Job.find()
                               .limit(parseInt(req.query.limit))
