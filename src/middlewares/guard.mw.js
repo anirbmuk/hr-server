@@ -3,6 +3,12 @@ const jwt = require('jsonwebtoken');
 
 const client_secret = process.env.hr_server_client_secret;
 
+const allowedActions = {
+    'HR_ADMIN': ['GET', 'POST', 'PATCH', 'DELETE'],
+    'HR_MANAGER': ['GET', 'POST', 'PATCH'],
+    'HR_EMPLOYEE': ['GET']
+};
+
 const guard = async (req, res, next) => {
     try {
         const authheader = req.header('Authorization');
@@ -17,9 +23,13 @@ const guard = async (req, res, next) => {
             return res.status(401).send({ error: 'Cannot authenticate incoming request' });
         }
 
-        if (req.method !== 'GET' && !req.baseUrl.endsWith('users')) {
-            if (user.role !== 'HR_MANAGER') {
-                return res.status(401).send({ error: 'User is not authorized to modify data' });
+        const method = req.method;
+        const role = user.role;
+        const baseUrl = req.baseUrl;
+
+        if (method !== 'GET' && !baseUrl.endsWith('users')) {
+            if (allowedActions[role].indexOf(method) < 0) {
+                return res.status(401).send({ error: `User is not authorized to ${method} data` });
             }
         }
 
