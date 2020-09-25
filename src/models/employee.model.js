@@ -56,6 +56,11 @@ const employeeSchema = mongoose.Schema({
     DepartmentId: {
         type: Number,
         trim: true
+    },
+    EmployeeRating: {
+        type: Number,
+        trim: true,
+		default: 0
     }
 }, {
     timestamps: true
@@ -78,7 +83,7 @@ employeeSchema.methods.toJSON = function() {
 };
 
 employeeSchema.statics.getUpdatableAttributes = function() {
-    return ['EmployeeId', 'FirstName', 'LastName', 'Email', 'PhoneNumber', 'HireDate', 'JobId', 'Salary', 'CommissionPct', 'ManagerId', 'DepartmentId'];
+    return ['EmployeeId', 'FirstName', 'LastName', 'Email', 'PhoneNumber', 'HireDate', 'JobId', 'Salary', 'CommissionPct', 'ManagerId', 'DepartmentId', 'EmployeeRating'];
 };
 
 employeeSchema.statics.getSearchableAttributes = function() {
@@ -91,7 +96,8 @@ employeeSchema.statics.getSearchableAttributes = function() {
         { attr: 'JobId', type: 'String' },
         { attr: 'Salary', type: 'Number' },
         { attr: 'ManagerId', type: 'Number' },
-        { attr: 'DepartmentId', type: 'Number' }
+        { attr: 'DepartmentId', type: 'Number' },
+		{ attr: 'EmployeeRating', type: 'Number' }
     ];
 };
 
