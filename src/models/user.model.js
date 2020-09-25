@@ -28,6 +28,10 @@ const userSchema = mongoose.Schema({
         required: true,
         trim: true
     },
+	locale: {
+		type: String,
+		default: 'en-US'
+	},
     tokens: [
         {
             token: {
