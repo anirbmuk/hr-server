@@ -1,6 +1,6 @@
 {
   "name": "hr-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node.js server and middleware for Oracle HR schema",
   "main": "src/server.js",
   "scripts": {
@@ -26,13 +26,13 @@
   "homepage": "https://github.com/anirbmuk/hr-server#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.13.5",
-    "validator": "^13.6.0"
+    "mongoose": "^6.3.0",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.15"
   }
 }
